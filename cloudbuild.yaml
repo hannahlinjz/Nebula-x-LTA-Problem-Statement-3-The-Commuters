@@ -1,0 +1,22 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/rail-condition-monitor:$SHORT_SHA'
+      - '.'
+    dir: 'TheCommuters'
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud run deploy rail-condition-monitor \
+          --image=gcr.io/$PROJECT_ID/rail-condition-monitor:$SHORT_SHA \
+          --region=us-central1 \
+          --platform=managed \
+          --allow-unauthenticated
+
+images:
+  - 'gcr.io/$PROJECT_ID/rail-condition-monitor:$SHORT_SHA'
